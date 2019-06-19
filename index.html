@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>ジャコス : 音声入力</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script src="assets/js/printThis.js"></script>
+    <script src="assets/js/html2canvas.min.js"></script>
+</head>
+<body>
+
+    <nav class="navbar navbar-custom">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#jacos-menu">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">ジャコス</a>
+            </div>
+            <div id="jacos-menu" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#"><button id="btn-print-doc" class="btn btn-success">Print</button></a></li>
+                </ul>
+            </div>
+            <!--/.nav-collapse -->
+        </div>
+        <!--/.container-fluid -->
+    </nav>
+<style>
+    .editor{
+        //border:1px solid gainsboro;
+        overflow: hidden;
+        padding:0.5in;
+        outline:none;
+    }
+    .bind-editor{
+        margin: 0 auto;
+        margin-top:0.5em;
+    }
+
+    @media print{
+        .bind-editor{
+            margin-top:1in;
+        }
+        p{margin-bottom: 10px;}
+
+    }
+</style>
+    <div class="container-fluid">
+        <div class="main-content">
+            <div class="row border-between">
+                <div class="main-doc-area">
+                    <div class="bind-editor bg-white">
+                        <div id="editor" class="editor bg-white" contenteditable="true">
+                            <h1>Saiful</h1>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <h1>Saiful</h1>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <h1>Saiful</h1>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+                            <h1>Saiful</h1>
+                            <p>Welcome to our dhaka jacos server in bangladesh</p>
+
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="print-area" style="position: fixed;left:-15in">
+
+    </div>
+
+    <script type="application/javascript">
+        function getCaretPosition() {
+            if (window.getSelection && window.getSelection().getRangeAt) {
+                var range = window.getSelection().getRangeAt(0);
+                var selectedObj = window.getSelection();
+                var rangeCount = 0;
+                var childNodes = selectedObj.anchorNode.parentNode.childNodes;
+                for (var i = 0; i < childNodes.length; i++) {
+                    if (childNodes[i] == selectedObj.anchorNode) {
+                        break;
+                    }
+                    if (childNodes[i].outerHTML)
+                        rangeCount += childNodes[i].outerHTML.length;
+                    else if (childNodes[i].nodeType == 3) {
+                        rangeCount += childNodes[i].textContent.length;
+                    }
+                }
+                return range.startOffset + rangeCount;
+            }
+            return -1;
+        }
+
+        function placeCaretAtEnd(el) {
+            el.focus();
+            if (typeof window.getSelection != "undefined"
+                && typeof document.createRange != "undefined") {
+                var range = document.createRange();
+                range.selectNodeContents(el);
+                range.collapse(false);
+                var sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else if (typeof document.body.createTextRange != "undefined") {
+                var textRange = document.body.createTextRange();
+                textRange.moveToElementText(el);
+                textRange.collapse(false);
+                textRange.select();
+            }
+        }
+
+        function getDocumentPPI() {
+            var elem = document.createElement('div');
+            elem.style.width = '1in';
+            document.body.appendChild(elem);
+            var ppi = elem.offsetWidth;
+            document.body.removeChild(elem);
+            return ppi;
+        }
+
+        function setHeightWidth() {
+            be = $(".bind-editor");
+            be.css({"width":w_px+"px","height":h_px+"px",});
+        }
+
+        function prepage_image_print(){
+            $("#print-area").html("");
+            var element = $(".editor");
+            var done = 0;
+            var timer;
+            element.each(function(e){
+                doc = $(this);
+                options = {scale:2,};
+                html2canvas(doc[0], options).then(function(canvas) {
+                    var src = canvas.toDataURL();
+                    $html = "<img style='width:"+w_px+"px;' class='print-images' src='"+src+"'>";
+                    $("#print-area").append($html);
+                    done++;
+                });
+            })
+            timer = setInterval(function(){
+                if(element.length == done)
+                {
+                    clearInterval(timer);
+                    $(".print-images").printThis();
+                }
+            },1000);
+        }
+
+        function move_line_down(jt,e)
+        {
+
+            var offset = 25;
+
+            doc = $(".main-doc-area");
+
+            c_be = jt.parents(".bind-editor"); // Current bind editor
+            be = $(".bind-editor"); // All bind bind editor
+
+
+            c_be_i = be.index(c_be); // Current bind editor index
+            c_be_t = be.length; // Total number of bind editor
+
+
+            c_ed = be.eq(c_be_i).find(".editor"); // Current editor
+            height = Math.ceil(c_ed.outerHeight() + offset) // Current editor's offset height
+
+            sel = window.getSelection();
+            sel_node_name = sel.focusNode.nodeName;
+            if(sel_node_name=='#text')
+                sel_ele = sel.focusNode.parentElement; // Element of current cursor
+            else
+                sel_ele = sel.focusNode;
+
+            c_ed_ch_total = parseInt(c_ed.children().length);
+            c_ed_ch_row = parseInt(c_ed.children().index(sel_ele)) + 1; // Selected row number
+
+            if(height>h_px)
+            {
+
+                n_be = tmp_n_be = be.eq(c_be_i + 1);
+
+                if(n_be.length==0)
+                {
+                    doc.append(new_be);
+                    setHeightWidth();
+                    be = $(".bind-editor");
+                    c_be_t = be.length;
+                }
+
+                for(i=c_be_i; i< c_be_t ; i++)
+                {
+                    c_be = be.eq(i);
+                    c_ed = c_be.find(".editor");
+                    c_height = Math.ceil(c_ed.outerHeight() + offset);
+
+                    if(c_height > h_px)
+                    {
+                        n_be = be.eq(i + 1);
+
+                        if (n_be.length == 0) {
+                            doc.append(new_be);
+                            setHeightWidth();
+                            be = $(".bind-editor");
+                        }
+
+                        c_be = be.eq(i);
+                        c_ed = c_be.find(".editor");
+                        c_ed_ch = c_ed.children(); // Children list of current editor
+                        c_ed_ch_t = c_ed_ch.length - 1;
+
+                        for (j = c_ed_ch_t; j >= 0; j--) {
+
+                            c_height = Math.ceil(c_ed.outerHeight() + offset);
+
+                            if (c_height <= h_px) {
+                                break;
+                            }
+
+                            el = c_ed_ch.eq(j); // Last element of current editor
+                            n_ed = be.eq(i + 1).find(".editor");
+                            n_ed.prepend(el.clone());
+                            el.remove();
+                        }
+
+                    } // End If c_height > h_px
+
+                } // End i=c_be_i; i< c_be_t ; i++
+
+                if(c_ed_ch_row == c_ed_ch_total)
+                {
+                    e.preventDefault();
+                    tmp_n_be.find(".editor").focus();
+                }
+
+            } // End height>h_px
+
+        } //End move line down function
+
+        var ppi = getDocumentPPI();
+        var h_px = ppi * 11.7;
+        var w_px = ppi * 8.3;
+        setHeightWidth();
+
+        var ctrlDown = false,
+            ctrlKey = 17,
+            cmdKey = 91,
+            vKey = 86,
+            cKey = 67,
+            enterKey = 13,
+            backspaceKey = 8;
+
+
+        var new_be = '<div style="margin-top:0.2in;" class="bind-editor bg-white">\n' +
+            '<div id="editor" class="editor bg-white" contenteditable="true">\n' +
+            '</div></div>';
+
+        $(document).keydown(function(e) {
+            if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = true;
+        }).keyup(function(e) {
+            if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = false;
+        });
+
+        $(".main-doc-area").on("keydown", ".editor", function(e){
+
+            jt = $(this);
+
+            if (ctrlDown && (e.keyCode == vKey))
+            {
+                move_line_down(jt,e);
+            }
+            else if(e.keyCode == backspaceKey)
+            {
+
+            }
+            else if(e.keyCode == enterKey)
+            {
+                move_line_down(jt,e);
+            }
+            else
+            {
+                console.log('test');
+            }
+            console.log('test');
+        });
+
+        $("#btn-print-doc").click(function(){
+            prepage_image_print();
+        })
+
+        $(".main-doc-area").on("click", ".bind-editor", function(){
+            
+            ch = $(this).find(".editor").children();
+            l_ele = ch.eq(ch.length -1).get(0);
+            placeCaretAtEnd(l_ele);
+        })
+
+
+
+
+
+
+
+
+
+    </script>
+    
+</body>
+</html>
