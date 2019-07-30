@@ -10,6 +10,16 @@
     }
 }
 
+@media only screen and (max-width: 600px) {
+    .navbar-nav{display:block;}
+    .left-sidebar, .right-sidebar{display:none;}
+}
+
+@media only screen and (min-width: 601px) {
+    .navbar-nav{display:none;}
+    .left-sidebar, .right-sidebar{display:block;}
+}
+
 body{
     background-color: #dddddfa8;
 }
@@ -41,6 +51,10 @@ body{
 .navbar-toggle {
     background-color: #8BC34A;
     border: 1px solid #8BC34A;
+}
+
+.navbar-nav button{
+    width:150px;
 }
 
 .icon-bar{background-color: white;}
@@ -143,6 +157,7 @@ body{
 .mlr-5{margin-right: 5px;margin-left:5px;}
 .mb-10{margin-bottom: 10px;}
 .pt-15{padding-top:15px;}
+.pl-20{padding-left: 20px;}
 
 .popup-color .box{
     width: 48px;
