@@ -31,25 +31,13 @@
         </div>
         <!--/.container-fluid -->
     </nav>
-<style>
 
-
-</style>
-    <div class="container-fluid">
+    <div class="container-fluid" style="margin-bottom:1em;">
         <div class="row">
             <div class="col-sm-2">
-                <div id="left-sidebar" class="left-sidebar">
-                    <div class="page-box-slide">
-                        <span>Slide - 1</span>
-                    </div>
-                    <div class="page-box-slide">
-                        <span>Slide - 2</span>
-                    </div>
-                    <div class="page-box-slide">
-                        <span>Slide - 2</span>
-                    </div>
-                    <div class="page-box-slide">
-                        <span>Slide - 2</span>
+                <div class="left-sidebar">
+                    <div eid="1" class="page-box-slide">
+                        <span>枠 - 1</span>
                     </div>
                 </div>
             </div>
@@ -65,15 +53,10 @@
                 </div>
             </div>
             <div class="col-sm-2">
-                <div class="controls">
-                    <button class="btn btn-success btn-block ctrl-page-setup">Page</button>
-                    <button class="btn btn-success btn-block ctrl-font-size">Size</button>
-                    <button class="btn btn-success btn-block ctrl-color">Color</button>
-                    <button class="btn btn-success btn-block ctrl-font-family">Fonts</button>
-                    <button class="btn btn-success btn-block ctrl-undo">Undo</button>
-                    <button class="btn btn-success btn-block ctrl-redo">Redo</button>
-                    <button class="btn btn-success btn-block ctrl-print">Print</button>
-
+                <div class="right-sidebar controls">
+                    <button class="btn btn-success btn-block ctrl-page-setup">ページ設定</button>
+                    <button class="btn btn-success btn-block ctrl-color" title="カラー">カラー</button>
+                    <button class="btn btn-success btn-block ctrl-functions" title="機能 多くの機能があり、選択して使用します。ご確認ください。">機能</button>
                 </div>
             </div>
         </div>
@@ -85,26 +68,61 @@
 
     <div class="popup popup-page-setup">
         <div class="popup-header">
-            <button class="btn btn-primary btn-sm pull-left btn-save">Save</button>
-            <button class="btn btn-danger btn-sm pull-right btn-return">Return</button>
+            <label>ページ設定</label>
+            <button class="btn btn-danger btn-sm pull-right btn-return mr-10" title="戻る">戻る</button>
+            <!--<button class="btn btn-primary btn-sm pull-right btn-save mr-10">完了</button>-->
             <div class="clearfix"></div>
         </div>
         <hr>
         <div class="popup-body">
-            <label>Page Size</label>
-            <select class="form-control" name="sel-page-size">
+            <br><br>
+            <select onchange="word_change_page_size(this)" class="form-control" name="sel-page-size">
                 <option value="a5">A5 (5.8 x 8.3 in)</option>
                 <option value="a4" selected>A4 (8.3 x 11.7 in)</option>
                 <option value="a3">A3 (11.7 x 16.5 in)</option>
                 <option value="a2">A2 (16.5 x 23.4 in)</option>
             </select>
-            <br>
-            <label>Margin (inch)</label><br>
-            <input type="number" class="margin mt" placeholder="T" value="0.5">
-            <input type="number" class="margin mr" placeholder="R" value="0.5">
-            <input type="number" class="margin mb" placeholder="B" value="0.5">
-            <input type="number" class="margin ml" placeholder="L" value="0.5">
+        </div>
+    </div>
 
+    <div class="popup popup-color">
+        <div class="popup-header">
+            <label>カラー</label>
+            <button class="btn btn-danger btn-sm pull-right btn-return mr-10" title="戻る">戻る</button>
+            <!--<button class="btn btn-primary btn-sm pull-right btn-save mr-10">完了</button>-->
+            <div class="clearfix"></div>
+        </div>
+        <hr>
+        <div class="popup-body">
+            <div onclick="word_font_color('#000000')" class="box bg-black" title="黒"></div>
+            <div onclick="word_font_color('#FF0000')" class="box bg-red" title="赤"></div>
+            <div onclick="word_font_color('#008000')" class="box bg-green" title="緑"></div>
+            <div onclick="word_font_color('#00FF00')" class="box bg-lime" title="ライム"></div>
+            <div onclick="word_font_color('#0000FF')" class="box bg-blue" title="青"></div>
+            <div onclick="word_font_color('#800000')" class="box bg-maroon" title="あずき色"></div>
+            <div onclick="word_font_color('#FFFFFF')" class="box bg-white" title="白"></div>
+            <div class="box bg-yellow" title="黄"></div>
+        </div>
+    </div>
+
+    <div class="popup popup-functions">
+        <div class="popup-header">
+            <label>機能</label>
+            <button class="btn btn-danger btn-sm pull-right btn-return" title="戻る">戻る</button>
+            <div class="clearfix"></div>
+        </div>
+        <hr>
+        <div class="popup-body pt-15">
+            <button class="btn btn-warning mlr-5 mb-10">Color</button>
+            <button class="btn btn-warning mlr-5 mb-10">Color</button>
+            <button class="btn btn-warning mlr-5 mb-10">Color</button>
+            <button class="btn btn-warning mlr-5 mb-10">Color</button>
+            <button class="btn btn-warning mlr-5 mb-10">Color</button>
+            <button class="btn btn-warning mlr-5 mb-10">Color</button>
+            <button class="btn btn-warning mlr-5 mb-10">Color</button>
+            <button class="btn btn-warning mlr-5 mb-10">Color</button>
+            <button class="btn btn-warning mlr-5 mb-10">Color</button>
+            <button class="btn btn-warning mlr-5 mb-10">Color</button>
         </div>
     </div>
 

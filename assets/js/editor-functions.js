@@ -10,7 +10,9 @@ Author Contact : http://www.codexwp.com/about
 /*Global variables*/
 
 var g_margin= {"left":"0.5in","top":"0.5in","right":"0.5in","bottom":"0.5in"};
+
 var g_page_size = 'a4';
+
 var g_page_size_dim = {
     "a5":{"width":"5.8in","height":"8.3in"},
     "a4":{"width":"8.3in","height":"11.7in"},
@@ -18,7 +20,9 @@ var g_page_size_dim = {
     "a2":{"width":"16.5in","height":"23.4in"},
 }
 
+var g_range;
 
+$('.bind-editor').on('selectstart', ".editor", function () { $(document).one('mouseup', saveSelection)});
 
 $.fn.focusEnd = function() {
     $(this).focus();
@@ -26,7 +30,6 @@ $.fn.focusEnd = function() {
         node = tmp.get(0),
         range = null,
         sel = null;
-
     if (document.selection) {
         range = document.body.createTextRange();
         range.moveToElementText(node);
@@ -40,6 +43,33 @@ $.fn.focusEnd = function() {
     }
     tmp.remove();
     return this;
+}
+
+
+function saveSelection() {
+    if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.getRangeAt && sel.rangeCount) {
+            g_range = sel.getRangeAt(0);
+        }
+    } else if (document.selection && document.selection.createRange) {
+        g_range = document.selection.createRange();
+    }
+    else {
+        g_range = null;
+    }
+}
+
+function restoreSelection() {
+    if (g_range) {
+        if (window.getSelection) {
+            sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(g_range);
+        } else if (document.selection && g_range.select) {
+            g_range.select();
+        }
+    }
 }
 
 /*
@@ -77,6 +107,11 @@ function page_setup(size,margin)
     ed.css({"padding":mar});
 }
 
+function word_change_page_size(t)
+{
+    g_page_size = $(t).val();
+    page_setup(g_page_size,g_margin);
+}
 
 function getCaretPosition() {
     if (window.getSelection && window.getSelection().getRangeAt) {
@@ -101,25 +136,6 @@ function getCaretPosition() {
         return data;//range.startOffset + rangeCount;
     }
     return -1;
-}
-
-function placeCaretAtEnd(elm) {
-    //el.focus();
-    if(!$.browser.webkit) {
-        elm.focus();
-    } else {
-        elm.focus();
-        window.getSelection().setPosition(0);
-    }
-}
-
-function getDocumentPPI() {
-    var elem = document.createElement('div');
-    elem.style.width = '1in';
-    document.body.appendChild(elem);
-    var ppi = elem.offsetWidth;
-    document.body.removeChild(elem);
-    return ppi;
 }
 
 
@@ -238,7 +254,7 @@ function move_line_down(jt,e)
             }
         }
 
-        if((c_ed_ch_row == c_ed_ch_total))
+        if(c_ed_ch_row == c_ed_ch_total)
         {
             tmp_n_be.find(".editor").focus();
         }
@@ -279,11 +295,12 @@ function move_line_up(jt,e)
 
     caret = getCaretPosition();
 
+
     if(be.length == 1)
         return;
 
 
-    if((line==-1 || line==0) && next_ed.length==0)
+    if((line==-1 || (line==0 && c_ed_childs.length==0) ) && next_ed.length==0)
     {
         prev_ed.focusEnd();
         c_be.remove();
@@ -315,6 +332,10 @@ function move_line_up(jt,e)
         }, 10);
 
     }
+    else
+    {
+        move_line_up_helper(c_be_i)
+    }
 
 
 }
@@ -327,10 +348,54 @@ DESCRIPTIONS : This function will help the move_line_up function
 function move_line_up_helper(cbei)
 {
     $be = $(".bind-editor");
-    var i;
-    for(i=cbei;$be.length;i++)
-    {
+    $hpx = Math.ceil($be.innerHeight());
+    off = 21;
 
+    var i;
+    for(i=cbei;i<$be.length;i++)
+    {
+        $cbe = $be.eq(i);
+        $ced = $cbe.find(".editor");
+        $nbe = $be.eq(i+1);
+
+        if($nbe.length!=0)
+        {
+            $ned = $nbe.find(".editor");
+            $ned_ch = nodes_to_element($ned.get(0).childNodes);
+            $chi =0;
+
+            while(1)
+            {
+                $cavh = $hpx - (Math.ceil($ced.outerHeight()) + off);
+                $cele = $ned_ch.eq($chi);
+
+                if($cele.length==0)
+                {
+                    $nbe.remove();
+                    set_pagination_numbers();
+                    break;
+                }
+
+                try {
+                    $celeh = $cele.height();
+                    if($cavh >= $celeh)
+                    {
+                        $ced.append($cele);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                catch(err) {
+                    $nbe.remove();
+                    set_pagination_numbers();
+                    break;
+                }
+
+                $chi++;
+            }
+        }
     }
 }
 
@@ -341,21 +406,34 @@ DESCRIPTION : This function will set page numbers while creating new pages or re
 */
 function set_pagination_numbers()
 {
-    //return;
     $(".pagi-number").remove();
     $be = $(".bind-editor");
     var len = $be.length;
     var sn = 1;
     $be.each(function(){
-        $(this).append("<div class='pagi-number'>Page "+sn+" / "+len+"</div>");
+        $(this).append("<div class='pagi-number'>ページ "+sn+" / "+len+"</div>");
         sn++;
     })
+    set_sidebar_slideshow();
 }
 
-function change_color(color) {
-    var span = document.createElement("span");
-    span.style.color = color;
+function set_sidebar_slideshow()
+{
+    $(".left-sidebar").html("");
+    $be = $(".bind-editor");
+    var page = 0;
+    for(i=0;i<$be.length;i++)
+    {
+        page++;
+        $slide = '<div eid="'+page+'" class="page-box-slide"><span>枠 - '+page+'</span></div>';
+        $(".left-sidebar").append($slide);
+    }
+}
 
+function word_font_color(code) {
+    restoreSelection();
+    var span = document.createElement("span");
+    span.style.color = code;
     if (window.getSelection) {
         var sel = window.getSelection();
         if (sel.rangeCount) {
@@ -365,9 +443,10 @@ function change_color(color) {
             sel.addRange(range);
         }
     }
+
 }
 
-function change_font_size(size) {
+function word_font_size(size) {
     var span = document.createElement("span");
     span.style.fontsize = size;
 
@@ -453,5 +532,3 @@ function nodes_to_element(nodes)
     element = $(nodes).filter(function(){ this.nodeType == 3; return this; });
     return element;
 }
-
-
